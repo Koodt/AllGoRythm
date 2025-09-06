@@ -1,4 +1,5 @@
 import os
+import re
 import json
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,8 +13,15 @@ dataset = []
 def generate_tags(file_path: str) -> list[str]:
     rel_path = os.path.relpath(file_path, BASE_DIR)
     parts = rel_path.split(os.sep)
-    tags = parts[:-1]
-    return tags
+
+    lang = parts[0].lower()
+    dirs = parts[1:-1]
+    filename = os.path.splitext(parts[-1])[0]
+
+    file_tags = re.split(r"[_\-]+", filename)
+    file_tags = [re.sub(r"\d+$", "", tag) for tag in file_tags if tag]
+
+    return [lang] + dirs + file_tags
 
 
 for root, _, files in os.walk(BASE_DIR):

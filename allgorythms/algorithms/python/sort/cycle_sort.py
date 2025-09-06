@@ -4,9 +4,9 @@ def cycle_sort(arr):
     This is based on the idea that the permutations to be sorted
     can be decomposed into cycles,
     and the results can be individually sorted by cycling.
-    
+
     reference: https://en.wikipedia.org/wiki/Cycle_sort
-    
+
     Average time complexity : O(N^2)
     Worst case time complexity : O(N^2)
     """
