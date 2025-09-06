@@ -5,7 +5,7 @@ import warnings
 
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import SGDClassifier
-from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 
@@ -68,7 +68,7 @@ for d in data:
     y_lang.append(lang)
     y_tags.append(other_tags)
 
-vectorizer = HashingVectorizer(n_features=2**16, alternate_sign=False)
+vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(codes)
 
 mlb = MultiLabelBinarizer()

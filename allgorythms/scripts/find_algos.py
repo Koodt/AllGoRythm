@@ -43,6 +43,43 @@ def extract_functions_python(code: str) -> list[str]:
     return funcs
 
 
+def extract_cpp_functions_with_classes(code: str):
+    funcs = []
+    class_stack = []
+    brace_stack = []
+
+    lines = code.splitlines()
+    for lineno, line in enumerate(lines):
+        line_strip = line.strip()
+
+        class_match = re.match(r'\b(class|struct)\s+(\w+)', line_strip)
+        if class_match:
+            class_stack.append(class_match.group(2))
+
+        if '{' in line_strip:
+            brace_stack.append('{')
+
+        if '}' in line_strip and brace_stack:
+            brace_stack.pop()
+            if class_stack and not brace_stack:
+                class_stack.pop()
+
+        func_match = re.match(
+            r'\b(?:void|int|float|double|char|bool|string)\s+(\w+)\s*\(([^)]*)\)\s*\{',
+            line_strip
+        )
+        if func_match:
+            name = func_match.group(1)
+            params = func_match.group(2)
+            start_line = lineno + 1
+            snippet_lines = lines[start_line-1:start_line+20]
+            snippet = "\n".join(snippet_lines)
+            full_name = '.'.join(class_stack + [name]) if class_stack else name
+            funcs.append((full_name, params, start_line, snippet))
+
+    return funcs
+
+
 def extract_functions_regex(code: str) -> list[str]:
     funcs = []
     pattern = r"(?:func\s+|void\s+|int\s+|float\s+|double\s+|char\s+)(\w+)\s*\([^)]*\)\s*{"
@@ -82,8 +119,11 @@ def main():
     if url.endswith(".py"):
         logger.info(f"Extract python code ...")
         funcs = extract_functions_python(code)
+    elif url.endswith(".cpp"):
+        logger.info(f"Extract CPP code ...")
+        funcs = extract_cpp_functions_with_classes(code)
     else:
-        logger.info(f"Extract GO or CPP code ...")
+        logger.info(f"Extract GO code ...")
         funcs = extract_functions_regex(code)
 
     if not funcs:
@@ -92,7 +132,10 @@ def main():
     for name, start, end, func_code in funcs:
         X = vectorizer.transform([func_code])
         pred_lang = clf_lang.predict(X)[0]
-        pred_tags = mlb.inverse_transform(clf_tags.predict(X))[0]
+        y_pred = clf_tags.predict(X)
+        tags_list = mlb.inverse_transform(y_pred)
+
+        pred_tags = list(tags_list[0]) if tags_list else []
 
         if pred_tags:
             print("=" * 60)
