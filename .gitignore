@@ -211,3 +211,7 @@ uv.lock
 
 # PKL
 *.pkl
+
+
+# PKL
+*.json
