@@ -20,3 +20,7 @@ make train
 ```bash
 make predict FILE=allgorythms/algorithms/python/sort/insertion/main.py
 ```
+
+```bash
+make find URL=allgorythms/algorithms/python/sort/insertion/main.py
+```
