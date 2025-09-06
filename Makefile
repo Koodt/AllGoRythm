@@ -4,6 +4,7 @@ PROJECT_DIR := .
 DATASET_SRIPT := allgorythms/scripts/generate_dataset.py
 TRAIN_SCRIPT := allgorythms/model/train.py
 PREDICT_SCRIPT := allgorythms/model/predict.py
+FIND_ALGOS := allgorythms/scripts/find_algos.py
 
 black:
 	black $(PROJECT_DIR)
@@ -21,4 +22,10 @@ predict:
 ifndef FILE
 	$(error "Usage: make predict FILE=path/to/code_file")
 endif
-	python3 $(PREDICT_SCRIPT) $(FILE)
+	python $(PREDICT_SCRIPT) $(FILE)
+
+find:
+ifndef URL
+	$(error "Usage: make predict URL=url/to/code_file")
+endif
+	python $(FIND_ALGOS) $(URL)
